@@ -39,48 +39,116 @@
     background: repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px);
     pointer-events: none; z-index: 1; mix-blend-mode: overlay;
   }
-  .wrap { position: relative; z-index: 2; max-width: 1620px; margin: 0 auto; padding: 28px 32px 80px; }
+  .wrap { position: relative; z-index: 2; max-width: 1620px; margin: 0 auto; padding: 14px 22px 24px; }
 
-  /* ============ HEADER ============ */
-  header.top {
-    display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 28px;
-    padding: 18px 22px; border: 1px solid var(--line);
+  /* ============ COMPACT HEADER ============ */
+  .top-compact {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 10px 18px;
+    border: 1px solid var(--line);
     background: linear-gradient(135deg, rgba(255, 216, 74, 0.04), rgba(255, 61, 104, 0.04)), rgba(12, 18, 32, 0.6);
-    backdrop-filter: blur(8px); border-radius: 4px; position: relative; overflow: hidden;
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 10px;
   }
-  header.top::before {
+  .top-compact::before {
     content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
     background: linear-gradient(90deg, var(--accent-2), var(--accent), var(--cyan), var(--accent));
     background-size: 300% 100%; animation: bandShift 8s linear infinite;
   }
   @keyframes bandShift { from { background-position: 0% 0; } to { background-position: 300% 0; } }
 
-  .brand { display: flex; align-items: center; gap: 14px; }
+  .brand { display: flex; align-items: center; gap: 12px; }
   .logo-mark {
-    width: 52px; height: 52px; border-radius: 6px;
+    width: 40px; height: 40px; border-radius: 5px;
     background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
     display: grid; place-items: center; color: #0b0f1a;
-    font-family: "Russo One", sans-serif; font-size: 26px;
-    box-shadow: 0 0 30px rgba(255, 216, 74, 0.35), inset 0 0 0 2px rgba(255,255,255,0.15);
+    font-family: "Russo One", sans-serif; font-size: 20px;
+    box-shadow: 0 0 20px rgba(255, 216, 74, 0.3), inset 0 0 0 2px rgba(255,255,255,0.15);
     transform: rotate(-4deg);
+    flex-shrink: 0;
   }
-  .brand-text .title { font-family: "Russo One", "Bebas Neue", sans-serif; font-size: 26px; letter-spacing: 0.06em; line-height: 1; }
+  .brand-text .title { font-family: "Russo One", "Bebas Neue", sans-serif; font-size: 20px; letter-spacing: 0.05em; line-height: 1; }
   .brand-text .title .accent { color: var(--accent); }
-  .brand-text .sub { margin-top: 6px; color: var(--muted); font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: 0.25em; }
+  .brand-text .sub { margin-top: 3px; color: var(--muted); font-family: "JetBrains Mono", monospace; font-size: 9px; letter-spacing: 0.22em; }
 
-  .header-mid {
+  .header-right {
     display: flex;
-    gap: 10px;
-    justify-content: center;
-    flex-wrap: wrap;
-    align-items: stretch;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .live-clock {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+  }
+  .live-clock .time {
+    font-family: "Russo One", sans-serif;
+    font-size: 22px;
+    color: var(--text);
+    line-height: 1;
+    letter-spacing: 0.04em;
+    display: inline-flex;
+    align-items: center;
+  }
+  .live-clock .date {
+    font-family: "JetBrains Mono", monospace;
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+  }
+  .live-dot {
+    display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent-2); margin-right: 7px; box-shadow: 0 0 10px var(--accent-2);
+    animation: pulseDot 1.4s ease-in-out infinite;
+  }
+  @keyframes pulseDot { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.3); } }
+
+  .sync-status {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+  }
+  .sync-status .lamp { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); }
+  .sync-status.syncing .lamp { background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: pulseDot 0.8s ease-in-out infinite; }
+  .sync-status.error   .lamp { background: var(--accent-2); box-shadow: 0 0 8px var(--accent-2); }
+  .sync-label { color: var(--text); }
+  .sync-status.error .sync-label { color: var(--accent-2); }
+  .sync-meta { color: var(--muted); margin-left: 4px; }
+  .countdown { color: var(--cyan); font-weight: 700; }
+
+  .sync-btn {
+    background: transparent; border: 1px solid var(--line); color: var(--text);
+    padding: 6px 10px; border-radius: 3px; cursor: pointer;
+    font-family: "JetBrains Mono", monospace; font-size: 14px;
+    transition: all 0.2s ease;
+    line-height: 1;
+  }
+  .sync-btn:hover { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 12px rgba(255, 216, 74, 0.15); transform: rotate(180deg); }
+
+  /* ============ CHANNELS STRIP (full width) ============ */
+  .channels-strip {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
   }
   .ch-pill {
     display: flex;
     flex-direction: column;
-    padding: 8px 14px;
+    padding: 9px 12px;
+    border: 1px solid var(--line);
     border-left: 3px solid var(--ch-color, var(--accent));
-    min-width: 78px;
+    background: linear-gradient(180deg, rgba(19, 27, 48, 0.5), rgba(12, 18, 32, 0.6));
+    border-radius: 4px;
     transition: transform 0.2s ease;
   }
   .ch-pill:hover { transform: translateY(-2px); }
@@ -89,74 +157,39 @@
     font-family: "Russo One", "Noto Sans TC", sans-serif;
     color: var(--ch-color, var(--text));
     font-size: 11px;
-    letter-spacing: 0.12em;
-    margin-bottom: 3px;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
   }
-  .ch-pill .ch-pill-icon {
-    font-size: 13px;
-  }
+  .ch-pill .ch-pill-icon { font-size: 13px; }
   .ch-pill .ch-pill-num {
     font-family: "Bebas Neue", sans-serif;
-    font-size: 26px;
+    font-size: 28px;
     line-height: 1;
     color: var(--text);
     letter-spacing: 0.04em;
   }
 
-  .live-clock { text-align: right; }
-  .live-clock .date { font-family: "JetBrains Mono", monospace; color: var(--muted); font-size: 12px; letter-spacing: 0.2em; }
-  .live-clock .time { font-family: "Russo One", sans-serif; font-size: 32px; color: var(--text); margin-top: 2px; letter-spacing: 0.06em; }
-  .live-dot {
-    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
-    background: var(--accent-2); margin-right: 8px; box-shadow: 0 0 12px var(--accent-2);
-    animation: pulseDot 1.4s ease-in-out infinite;
-  }
-  @keyframes pulseDot { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.3); } }
-
-  /* ============ SYNC BAR ============ */
-  .sync-bar {
-    display: flex; align-items: center; justify-content: space-between; gap: 16px;
-    margin-top: 18px; padding: 10px 18px; border: 1px solid var(--line); border-radius: 4px;
-    background: rgba(12, 18, 32, 0.6);
-    font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: 0.18em; color: var(--muted);
-  }
-  .sync-left { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-  .sync-status { display: inline-flex; align-items: center; gap: 8px; }
-  .sync-status .lamp { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 10px var(--green); }
-  .sync-status.syncing .lamp { background: var(--accent); box-shadow: 0 0 10px var(--accent); animation: pulseDot 0.8s ease-in-out infinite; }
-  .sync-status.error   .lamp { background: var(--accent-2); box-shadow: 0 0 10px var(--accent-2); }
-  .sync-label { color: var(--text); }
-  .sync-status.error .sync-label { color: var(--accent-2); }
-  .countdown { color: var(--cyan); font-weight: 700; }
-  .sync-btn {
-    background: transparent; border: 1px solid var(--line); color: var(--text);
-    padding: 6px 14px; border-radius: 3px; cursor: pointer;
-    font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: 0.15em;
-    transition: all 0.2s ease;
-  }
-  .sync-btn:hover { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 16px rgba(255, 216, 74, 0.15); }
-
   /* ============ MODE SWITCHER ============ */
   .switcher {
-    display: flex; gap: 0; margin: 22px 0 22px;
+    display: flex; gap: 0; margin: 0 0 14px;
     border: 1px solid var(--line); background: rgba(12, 18, 32, 0.7);
-    border-radius: 4px; padding: 6px; width: fit-content; position: relative;
+    border-radius: 4px; padding: 4px; width: fit-content; position: relative;
   }
   .switch-btn {
     background: transparent; border: none; color: var(--muted);
-    font-family: "Russo One", "Noto Sans TC", sans-serif; font-size: 14px; letter-spacing: 0.15em;
-    padding: 12px 28px; cursor: pointer; border-radius: 2px;
+    font-family: "Russo One", "Noto Sans TC", sans-serif; font-size: 13px; letter-spacing: 0.12em;
+    padding: 8px 22px; cursor: pointer; border-radius: 2px;
     transition: color 0.2s ease; position: relative; z-index: 2;
   }
   .switch-btn.active { color: #0b0f1a; }
   .switch-indicator {
-    position: absolute; top: 6px; bottom: 6px;
+    position: absolute; top: 4px; bottom: 4px;
     background: linear-gradient(135deg, var(--accent), #ffec99);
     border-radius: 2px; transition: all 0.35s cubic-bezier(0.65, 0, 0.35, 1);
-    box-shadow: 0 0 24px rgba(255, 216, 74, 0.4); z-index: 1;
+    box-shadow: 0 0 20px rgba(255, 216, 74, 0.4); z-index: 1;
   }
 
   /* ============ SUMMARY CARDS ============ */
@@ -164,14 +197,14 @@
   .order-status {
     display: grid;
     grid-template-columns: 1.3fr 1fr 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 32px;
+    gap: 12px;
+    margin-bottom: 14px;
   }
   .os-card {
     border: 1px solid var(--line);
     background: linear-gradient(180deg, rgba(19, 27, 48, 0.7), rgba(12, 18, 32, 0.7));
-    border-radius: 6px;
-    padding: 22px 24px;
+    border-radius: 5px;
+    padding: 12px 18px;
     position: relative;
     overflow: hidden;
     transition: transform 0.25s ease;
@@ -191,13 +224,13 @@
   .os-card .os-label {
     font-family: "Russo One", "Noto Sans TC", sans-serif;
     color: var(--os-color);
-    font-size: 14px;
-    letter-spacing: 0.18em;
-    margin-bottom: 12px;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    margin-bottom: 6px;
   }
   .os-card .os-num {
     font-family: "Bebas Neue", sans-serif;
-    font-size: 64px;
+    font-size: 44px;
     line-height: 1;
     letter-spacing: 0.02em;
     color: var(--text);
@@ -205,16 +238,16 @@
   }
   .os-total .os-num { color: var(--accent); text-shadow: 0 0 24px rgba(255, 216, 74, 0.3); }
   .os-card .os-foot {
-    margin-top: 10px;
+    margin-top: 6px;
     font-family: "JetBrains Mono", monospace;
-    font-size: 11px;
+    font-size: 10px;
     color: var(--muted);
-    letter-spacing: 0.18em;
+    letter-spacing: 0.15em;
   }
   .os-card .os-foot span {
     color: var(--orange);
     font-weight: 700;
-    font-size: 13px;
+    font-size: 12px;
   }
   .os-card.done .os-foot span {
     color: var(--green);
@@ -515,85 +548,67 @@
     letter-spacing: 0.2em;
   }
 
-  /* ============ ERROR RATE BOARD ============ */
-  .error-board {
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    background: rgba(12, 18, 32, 0.5);
-    padding: 22px 24px;
-    margin-bottom: 32px;
+  /* ============ ERROR SECTION (合併在拿貨王下方) ============ */
+  .error-section {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--line);
   }
-  .eb-title {
-    font-family: "Russo One", sans-serif;
-    font-size: 18px;
-    letter-spacing: 0.1em;
-    margin-bottom: 4px;
+  .error-section-title {
+    font-family: "Russo One", "Noto Sans TC", sans-serif;
+    color: var(--accent-2);
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    margin-bottom: 8px;
+    text-shadow: 0 0 10px rgba(255, 61, 104, 0.4);
   }
-  .eb-title .glow { color: var(--accent-2); text-shadow: 0 0 18px rgba(255, 61, 104, 0.5); }
-  .eb-sub { font-family: "JetBrains Mono", monospace; color: var(--muted); font-size: 11px; letter-spacing: 0.2em; margin-bottom: 16px; }
-
-  .err-grid {
+  .error-section-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .err-row {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 10px;
-  }
-  .err-item {
-    display: grid;
-    grid-template-columns: 26px 1fr auto;
+    grid-template-columns: 1fr auto;
     align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border-radius: 4px;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 3px;
     background: rgba(6, 8, 15, 0.4);
     border: 1px solid var(--line);
+    font-size: 12px;
   }
-  .err-item .err-mini-avatar {
-    width: 22px; height: 22px;
-    border-radius: 3px;
-    font-family: "Russo One", sans-serif;
+  .err-row .err-name {
+    font-family: "Russo One", "Noto Sans TC", sans-serif;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .err-row .err-name .err-real {
+    font-family: "JetBrains Mono", monospace;
+    color: var(--muted);
     font-size: 10px;
-    display: grid; place-items: center;
-    color: #0b0f1a;
+    margin-left: 4px;
   }
-  .err-item .err-role { font-family: "Russo One", "Noto Sans TC", sans-serif; font-size: 13px; }
-  .err-item .err-real { font-family: "JetBrains Mono", monospace; font-size: 10px; color: var(--muted); }
-  .err-item .err-tag {
+  .err-row .err-tag {
     font-family: "JetBrains Mono", monospace;
     font-weight: 700;
-    font-size: 12px;
-    padding: 3px 8px;
+    font-size: 11px;
+    padding: 2px 8px;
     border-radius: 999px;
     letter-spacing: 0.05em;
   }
   .err-tag.green  { color: var(--green);    background: rgba(61, 255, 166, 0.1); border: 1px solid rgba(61, 255, 166, 0.3); }
   .err-tag.yellow { color: var(--accent);   background: rgba(255, 216, 74, 0.1); border: 1px solid rgba(255, 216, 74, 0.3); }
   .err-tag.red    { color: var(--accent-2); background: rgba(255, 61, 104, 0.1); border: 1px solid rgba(255, 61, 104, 0.3); }
-
   .err-empty {
-    grid-column: 1/-1;
     text-align: center;
-    padding: 40px 20px;
+    padding: 14px 8px;
     color: var(--dim);
     font-family: "JetBrains Mono", monospace;
     font-size: 11px;
-    letter-spacing: 0.2em;
   }
-
-  /* ============ MARQUEE ============ */
-  .marquee {
-    margin-top: 16px; padding: 14px 0;
-    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
-    overflow: hidden; background: rgba(12, 18, 32, 0.6); position: relative; border-radius: 4px;
-  }
-  .marquee-track {
-    display: flex; gap: 48px; white-space: nowrap; animation: scroll 90s linear infinite;
-    font-family: "JetBrains Mono", monospace; color: var(--muted); font-size: 12px; letter-spacing: 0.15em;
-  }
-  .marquee-track span { display: inline-flex; align-items: center; gap: 10px; }
-  .marquee-track .dot { width: 4px; height: 4px; background: var(--accent); border-radius: 50%; }
-  @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-
-  .credit { text-align: center; margin-top: 22px; color: var(--dim); font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: 0.3em; }
 
   .anim-in { opacity: 0; transform: translateY(12px); animation: fadeUp 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
   @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
@@ -765,47 +780,45 @@
 </div>
 
 <div class="wrap">
-  <header class="top anim-in" style="animation-delay: 0s">
+
+  <!-- 1. Logo + 時間（最上面一排） -->
+  <header class="top-compact anim-in" style="animation-delay: 0s">
     <div class="brand">
       <div class="logo-mark">G</div>
       <div class="brand-text">
         <div class="title">出貨<span class="accent">戰績榜</span></div>
-        <div class="sub">GRAND LINE LOGISTICS · LIVE BATTLE STATS</div>
+        <div class="sub">GRAND LINE LOGISTICS</div>
       </div>
     </div>
-    <div class="header-mid" id="header-channels">
-      <!-- channels rendered here as compact pills -->
-    </div>
-    <div class="live-clock">
-      <div class="date" id="date-str">— —</div>
-      <div class="time"><span class="live-dot"></span><span id="clock">00:00:00</span></div>
-    </div>
-  </header>
-
-  <div class="sync-bar anim-in" style="animation-delay: 0.05s">
-    <div class="sync-left">
+    <div class="header-right">
       <div class="sync-status idle" id="sync-status">
         <span class="lamp"></span>
         <span class="sync-label" id="sync-label">已同步</span>
+        <span class="sync-meta">下次 <span class="countdown" id="countdown">30s</span></span>
       </div>
-      <div>最後更新：<span id="last-sync">—</span></div>
-      <div>下次更新：<span class="countdown" id="countdown">30s</span></div>
+      <div class="live-clock">
+        <span class="time"><span class="live-dot"></span><span id="clock">00:00:00</span></span>
+        <span class="date" id="date-str">— —</span>
+      </div>
+      <button class="sync-btn" id="manual-sync" title="立即重新整理">↻</button>
     </div>
-    <button class="sync-btn" id="manual-sync">立即重新整理</button>
-    <button class="sync-btn" id="debug-btn" style="margin-left: 8px;">🔍 通路除錯</button>
-  </div>
+  </header>
 
   <div id="error-banner" class="error-banner">
     <b>連線失敗</b> · 無法讀取 Google Sheet。請確認共用設定為「知道連結的任何人都可檢視」。錯誤：<span id="error-detail">—</span>
   </div>
 
-  <div class="anim-in" style="animation-delay: 0.1s">
+  <!-- 2. 當日/當月切換 -->
+  <div class="anim-in" style="animation-delay: 0.05s">
     <div class="switcher" id="switcher">
       <div class="switch-indicator" id="switch-indicator"></div>
       <button class="switch-btn active" data-mode="daily">當日戰報</button>
       <button class="switch-btn" data-mode="monthly">當月累計</button>
     </div>
   </div>
+
+  <!-- 3. 通路（一整行，滿版） -->
+  <div class="channels-strip anim-in" id="header-channels" style="animation-delay: 0.1s"></div>
 
   <!-- Today order status: total / pick / check / pack -->
   <div class="order-status anim-in" style="animation-delay: 0.15s">
@@ -842,6 +855,10 @@
       </div>
       <div class="podium-stack" id="podium-pick"></div>
       <div class="division-rest" id="rest-pick"></div>
+      <div class="error-section">
+        <div class="error-section-title">⚠ 錯誤率</div>
+        <div class="error-section-list" id="err-list"></div>
+      </div>
     </div>
 
     <div class="division check">
@@ -866,18 +883,6 @@
 
   </section>
 
-  <!-- Error rate watch panel -->
-  <section class="error-board anim-in" style="animation-delay: 0.4s">
-    <div class="eb-title">錯誤率 <span class="glow">WATCHLIST</span></div>
-    <div class="eb-sub">只顯示有拿貨紀錄的選手 · 紅 ≥ 1.5%　黃 &lt; 1.5%　綠 = 0%</div>
-    <div class="err-grid" id="err-grid"></div>
-  </section>
-
-  <div class="marquee anim-in" style="animation-delay: 0.45s">
-    <div class="marquee-track" id="marquee-track"></div>
-  </div>
-
-  <div class="credit">POWERED BY THE STRAW HAT CREW · ALL HANDS ON DECK</div>
 </div>
 
 <script>
@@ -1007,10 +1012,6 @@
       renderOrderStatus(DETAIL_DATA, DAILY_DATA);
       renderChannels(DETAIL_DATA);
 
-      const now = new Date();
-      const pad = n => String(n).padStart(2, "0");
-      $("#last-sync").textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-
       if (DETAIL_ERROR) {
         setSyncStatus("error", "通路資料讀取失敗");
         $("#error-detail").textContent = `當日明細分頁讀取失敗：${DETAIL_ERROR}（人員資料正常）`;
@@ -1123,11 +1124,8 @@
     renderDivision(data, "check");
     renderDivision(data, "pack");
 
-    // 錯誤率區
+    // 錯誤率區（合併在拿貨王下方）
     renderErrorBoard(data);
-
-    // 跑馬燈
-    renderMarquee(data);
   }
 
   // 今日訂單狀況：總訂單、已拿/檢/包、各自剩餘
@@ -1242,62 +1240,35 @@
   }
 
   function renderErrorBoard(data) {
-    const grid = $("#err-grid");
-    grid.innerHTML = "";
+    const list = $("#err-list");
+    list.innerHTML = "";
 
-    // Only show those with pick activity, sorted: red > yellow > green
+    // 只顯示有拿貨的，依錯誤率高 → 低排序
     const candidates = data
       .filter(p => p.pick > 0)
       .map(p => ({ ...p, _rate: errorRate(p) }))
       .sort((a, b) => {
-        // Higher rate first; null at the end
         if (a._rate === null) return 1;
         if (b._rate === null) return -1;
         return b._rate - a._rate;
       });
 
     if (candidates.length === 0) {
-      grid.innerHTML = `<div class="err-empty">— 今日無拿貨紀錄 —</div>`;
+      list.innerHTML = `<div class="err-empty">— 今日無拿貨紀錄 —</div>`;
       return;
     }
 
-    candidates.forEach((p, i) => {
-      const colors = getColors(p.role, i);
+    candidates.forEach(p => {
       const cls = rateClass(p._rate);
       const label = p._rate === null ? "—" : (p._rate * 100).toFixed(2) + "%";
       const item = document.createElement("div");
-      item.className = "err-item";
+      item.className = "err-row";
       item.innerHTML = `
-        <div class="err-mini-avatar" style="background: linear-gradient(135deg, ${colors[0]}, ${colors[1]});">${p.role.charAt(0)}</div>
-        <div>
-          <div class="err-role">${p.role}</div>
-          <div class="err-real">${p.name || "未指派"} · 拿 ${fmt(p.pick)} / 錯 ${fmt(p.picked_wrong)}</div>
-        </div>
+        <div class="err-name">${p.role}<span class="err-real">${p.name || ""}</span></div>
         <span class="err-tag ${cls}">${label}</span>
       `;
-      grid.appendChild(item);
+      list.appendChild(item);
     });
-  }
-
-  function renderMarquee(data) {
-    const track = $("#marquee-track");
-    const items = [];
-
-    // Combine top-3 of each division for marquee
-    ["pick", "check", "pack"].forEach(k => {
-      const top = data.filter(p => p[k] > 0).sort((a, b) => b[k] - a[k]).slice(0, 3);
-      const labels = { pick: "拿貨", check: "檢貨", pack: "包貨" };
-      top.forEach((p, i) => {
-        items.push(`<span><span class="dot"></span>${labels[k]} #${i+1} ${p.role} ${fmt(p[k])} 件</span>`);
-      });
-    });
-
-    if (items.length === 0) {
-      track.innerHTML = `<span><span class="dot"></span>等候船員出戰中…</span>`;
-    } else {
-      const html = items.join("");
-      track.innerHTML = html + html;
-    }
   }
 
   function setNumber(id, value) {
@@ -1376,19 +1347,22 @@
       await loadData();
       startCountdown();
     });
-    $("#debug-btn").addEventListener("click", () => {
-      const info = window.__detailDebug || "(尚未抓到資料，請先按「立即重新整理」)";
-      showDebugModal(info);
-    });
-    $("#debug-close").addEventListener("click", hideDebugModal);
-    $("#debug-close-2").addEventListener("click", hideDebugModal);
-    $("#debug-copy").addEventListener("click", () => {
+    // Debug listeners (modal exists, button has been removed but safe to skip)
+    const debugBtn = document.getElementById("debug-btn");
+    if (debugBtn) {
+      debugBtn.addEventListener("click", () => {
+        const info = window.__detailDebug || "(尚未抓到資料，請先按「立即重新整理」)";
+        showDebugModal(info);
+      });
+    }
+    document.getElementById("debug-close")?.addEventListener("click", hideDebugModal);
+    document.getElementById("debug-close-2")?.addEventListener("click", hideDebugModal);
+    document.getElementById("debug-copy")?.addEventListener("click", () => {
       const text = $("#debug-content").textContent;
       navigator.clipboard.writeText(text).then(() => {
         $("#debug-copy").textContent = "✓ 已複製";
         setTimeout(() => { $("#debug-copy").textContent = "📋 複製內容"; }, 2000);
       }).catch(() => {
-        // fallback
         const ta = document.createElement("textarea");
         ta.value = text;
         document.body.appendChild(ta);
@@ -1399,7 +1373,7 @@
         setTimeout(() => { $("#debug-copy").textContent = "📋 複製內容"; }, 2000);
       });
     });
-    $("#debug-modal").addEventListener("click", (e) => {
+    document.getElementById("debug-modal")?.addEventListener("click", (e) => {
       if (e.target.id === "debug-modal") hideDebugModal();
     });
     startClock();
