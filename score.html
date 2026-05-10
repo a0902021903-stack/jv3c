@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>出貨戰績榜 — GRAND LINE LOGISTICS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;500;700;800&family=Noto+Sans+TC:wght@400;500;700;900&family=Russo+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-0: #06080f; --bg-1: #0c1220; --bg-2: #131b30;
+    --line: #1f2a44; --text: #e8ecf5; --muted: #6b7691; --dim: #44506a;
+    --accent: #ffd84a; --accent-2: #ff3d68;
+    --cyan: #38e8ff; --green: #3dffa6; --orange: #ff8a3d; --purple: #b66dff;
+    --grid: rgba(56, 232, 255, 0.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg-0); color: var(--text); }
+  body {
+    font-family: "Noto Sans TC", "JetBrains Mono", system-ui, sans-serif;
+    min-height: 100vh; overflow-x: hidden;
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(255, 61, 104, 0.12), transparent 60%),
+      radial-gradient(900px 500px at -5% 110%, rgba(56, 232, 255, 0.10), transparent 60%),
+      linear-gradient(180deg, #06080f 0%, #0a0f1c 100%);
+    background-attachment: fixed;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0;
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    pointer-events: none; z-index: 0; animation: gridShift 60s linear infinite;
+  }
+  @keyframes gridShift { from { background-position: 0 0, 0 0; } to { background-position: 480px 0, 0 480px; } }
+  body::after {
+    content: ""; position: fixed; inset: 0;
+    background: repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px);
+    pointer-events: none; z-index: 1; mix-blend-mode: overlay;
+  }
+  .wrap { position: relative; z-index: 2; max-width: 1620px; margin: 0 auto; padding: 28px 32px 80px; }
+
+  /* ============ HEADER ============ */
+  header.top {
+    display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 28px;
+    padding: 18px 22px; border: 1px solid var(--line);
+    background: linear-gradient(135deg, rgba(255, 216, 74, 0.04), rgba(255, 61, 104, 0.04)), rgba(12, 18, 32, 0.6);
+    backdrop-filter: blur(8px); border-radius: 4px; position: relative; overflow: hidden;
+  }
+  header.top::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--accent-2), var(--accent), var(--cyan), var(--accent));
+    background-size: 300% 100%; animation: bandShift 8s linear infinite;
+  }
+  @keyframes bandShift { from { background-position: 0% 0; } to { background-position: 300% 0; } }
+
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .logo-mark {
+    width: 52px; height: 52px; border-radius: 6px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+    display: grid; place-items: center; color: #0b0f1a;
+    font-family: "Russo One", sans-serif; font-size: 26px;
+    box-shadow: 0 0 30px rgba(255, 216, 74, 0.35), inset 0 0 0 2px rgba(255,255,255,0.15);
+    transform: rotate(-4deg);
+  }
+  .brand-text .title { font-family: "Russo One", "Bebas Neue", sans-serif; font-size: 26px; letter-spacing: 0.06em; line-height: 1; }
+  .brand-text .title .accent { color: var(--accent); }
+  .brand-text .sub { margin-top: 6px; color: var(--muted); font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: 0.25em; }
+
+  .header-mid {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    align-items: stretch;
+  }
+  .ch-pill {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 14px;
+    border-left: 3px solid var(--ch-color, var(--accent));
+    min-width: 78px;
+    transition: transform 0.2s ease;
+  }
+  .ch-pill:hover { transform: translateY(-2px); }
+  .ch-pill.zero { opacity: 0.4; }
+  .ch-pill .ch-pill-name {
+    font-family: "Russo One", "Noto Sans TC", sans-serif;
+    color: var(--ch-color, var(--text));
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .ch-pill .ch-pill-icon {
+    font-size: 13px;
+  }
+  .ch-pill .ch-pill-num {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 26px;
+    line-height: 1;
+    color: var(--text);
+    letter-spacing: 0.04em;
+  }
+
+  .live-clock { text-align: right; }
+  .live-clock .date { font-family: "JetBrains Mono", monospace; color: var(--muted); font-size: 12px; letter-spacing: 0.2em; }
+  .live-clock .time { font-family: "Russo One", sans-serif; font-size: 32px; color: var(--text); margin-top: 2px; letter-spacing: 0.06em; }
+  .live-dot {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent-2); margin-right: 8px; box-shadow: 0 0 12px var(--accent-2);
+    animation: pulseDot 1.4s ease-in-out infinite;
+  }
+  @keyframes pulseDot { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.3); } }
+
+  /* ============ SYNC BAR ============ */
+  .sync-bar {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    margin-top: 18px; padding: 10px 18px; border: 1px solid var(--line); border-radius: 4px;
+    background: rgba(12, 18, 32, 0.6);
+    font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: 0.18em; color: var(--muted);
+  }
+  .sync-left { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .sync-status { display: inline-flex; align-items: center; gap: 8px; }
+  .sync-status .lamp { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 10px var(--green); }
+  .sync-status.syncing .lamp { background: var(--accent); box-shadow: 0 0 10px var(--accent); animation: pulseDot 0.8s ease-in-out infinite; }
+  .sync-status.error   .lamp { background: var(--accent-2); box-shadow: 0 0 10px var(--accent-2); }
+  .sync-label { color: var(--text); }
+  .sync-status.error .sync-label { color: var(--accent-2); }
+  .countdown { color: var(--cyan); font-weight: 700; }
+  .sync-btn {
+    background: transparent; border: 1px solid var(--line); color: var(--text);
+    padding: 6px 14px; border-radius: 3px; cursor: pointer;
+    font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: 0.15em;
+    transition: all 0.2s ease;
+  }
+  .sync-btn:hover { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 16px rgba(255, 216, 74, 0.15); }
+
+  /* ============ MODE SWITCHER ============ */
+  .switcher {
+    display: flex; gap: 0; margin: 22px 0 22px;
+    border: 1px solid var(--line); background: rgba(12, 18, 32, 0.7);
+    border-radius: 4px; padding: 6px; width: fit-content; position: relative;
+  }
+  .switch-btn {
+    background: transparent; border: none; color: var(--muted);
+    font-family: "Russo One", "Noto Sans TC", sans-serif; font-size: 14px; letter-spacing: 0.15em;
+    padding: 12px 28px; cursor: pointer; border-radius: 2px;
+    transition: color 0.2s ease; position: relative; z-index: 2;
+  }
+  .switch-btn.active { color: #0b0f1a; }
+  .switch-indicator {
+    position: absolute; top: 6px; bottom: 6px;
+    background: linear-gradient(135deg, var(--accent), #ffec99);
+    border-radius: 2px; transition: all 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+    box-shadow: 0 0 24px rgba(255, 216, 74, 0.4); z-index: 1;
+  }
+
+  /* ============ SUMMARY CARDS ============ */
+  /* ============ ORDER STATUS (今日訂單) ============ */
+  .order-status {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .os-card {
+    border: 1px solid var(--line);
+    background: linear-gradient(180deg, rgba(19, 27, 48, 0.7), rgba(12, 18, 32, 0.7));
+    border-radius: 6px;
+    padding: 22px 24px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s ease;
+  }
+  .os-card:hover { transform: translateY(-2px); }
+  .os-card::before {
+    content: "";
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--os-color, var(--accent));
+    box-shadow: 0 0 14px var(--os-color, var(--accent));
+  }
+  .os-total { --os-color: var(--accent); }
+  .os-pick  { --os-color: var(--cyan); }
+  .os-check { --os-color: var(--purple); }
+  .os-pack  { --os-color: var(--green); }
+
+  .os-card .os-label {
+    font-family: "Russo One", "Noto Sans TC", sans-serif;
+    color: var(--os-color);
+    font-size: 14px;
+    letter-spacing: 0.18em;
+    margin-bottom: 12px;
+  }
+  .os-card .os-num {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 64px;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    transition: color 0.3s ease;
+  }
+  .os-total .os-num { color: var(--accent); text-shadow: 0 0 24px rgba(255, 216, 74, 0.3); }
+  .os-card .os-foot {
+    margin-top: 10px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.18em;
+  }
+  .os-card .os-foot span {
+    color: var(--orange);
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .os-card.done .os-foot span {
+    color: var(--green);
+  }
+
+  .flash { animation: flash 1.5s ease; }
+  @keyframes flash { 0% { color: #fff; text-shadow: 0 0 24px currentColor; } 100% { text-shadow: none; } }
+
+  /* ============ CHANNELS ============ */
+  .channels-section {
+    margin-bottom: 32px;
+  }
+  .channels-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 12px;
+  }
+  .channel-card {
+    border: 1px solid var(--line);
+    background: linear-gradient(180deg, rgba(19, 27, 48, 0.6), rgba(12, 18, 32, 0.7));
+    border-radius: 5px;
+    padding: 14px 14px 16px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s ease, border-color 0.25s ease;
+  }
+  .channel-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--ch-color, var(--accent));
+  }
+  .channel-card::before {
+    content: "";
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--ch-color, var(--accent));
+    opacity: 0.7;
+  }
+  .channel-card.zero { opacity: 0.45; }
+  .channel-card .ch-icon {
+    font-size: 20px;
+    margin-bottom: 8px;
+    display: inline-block;
+  }
+  .channel-card .ch-name {
+    font-family: "Russo One", "Noto Sans TC", sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+  .channel-card .ch-num {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 30px;
+    line-height: 1;
+    color: var(--ch-color, var(--text));
+    letter-spacing: 0.02em;
+  }
+  .channel-card .ch-pct {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    margin-top: 4px;
+    margin-bottom: 8px;
+  }
+  .channel-card .ch-bar {
+    height: 3px;
+    background: rgba(31, 42, 68, 0.6);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .channel-card .ch-bar-fill {
+    height: 100%;
+    background: var(--ch-color, var(--accent));
+    border-radius: 2px;
+    transition: width 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: 0 0 8px var(--ch-color, var(--accent));
+  }
+
+  /* ============ TRIPLE PODIUMS ============ */
+  .podium-trio {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+    margin-bottom: 36px;
+  }
+
+  .division {
+    border: 1px solid var(--line);
+    background: linear-gradient(180deg, rgba(19, 27, 48, 0.5), rgba(12, 18, 32, 0.7));
+    border-radius: 6px;
+    padding: 22px 20px 26px;
+    position: relative;
+    overflow: hidden;
+  }
+  .division::before {
+    content: "";
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--division-color, var(--accent));
+    box-shadow: 0 0 16px var(--division-color, var(--accent));
+  }
+  .division.pick  { --division-color: var(--cyan); }
+  .division.check { --division-color: var(--purple); }
+  .division.pack  { --division-color: var(--green); }
+
+  .division-header {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--line);
+    margin-bottom: 18px;
+  }
+  .division-header .division-icon {
+    font-family: "Russo One", sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: var(--division-color);
+    padding: 3px 10px;
+    border: 1px solid var(--division-color);
+    border-radius: 999px;
+    align-self: center;
+  }
+  .division-header h2 {
+    font-family: "Russo One", "Noto Sans TC", sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    color: var(--division-color);
+    text-shadow: 0 0 18px color-mix(in srgb, var(--division-color) 50%, transparent);
+  }
+  .division-header .total {
+    margin-left: auto;
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 22px;
+    color: var(--text);
+  }
+  .division-header .total .unit {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-left: 4px;
+    letter-spacing: 0.2em;
+  }
+
+  /* ===== Podium top 3 ===== */
+  .podium-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .podium-row {
+    display: grid;
+    grid-template-columns: 44px 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 14px;
+    border-radius: 4px;
+    background: rgba(6, 8, 15, 0.5);
+    border: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  .podium-row.rank-1 {
+    background: linear-gradient(90deg, rgba(255, 216, 74, 0.18), rgba(255, 216, 74, 0.04));
+    border-color: rgba(255, 216, 74, 0.45);
+  }
+  .podium-row.rank-2 {
+    background: linear-gradient(90deg, rgba(192, 210, 255, 0.12), rgba(192, 210, 255, 0.02));
+    border-color: rgba(192, 210, 255, 0.3);
+  }
+  .podium-row.rank-3 {
+    background: linear-gradient(90deg, rgba(255, 138, 61, 0.12), rgba(255, 138, 61, 0.02));
+    border-color: rgba(255, 138, 61, 0.3);
+  }
+
+  .medal {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    font-family: "Russo One", sans-serif;
+    font-size: 16px;
+    color: #0b0f1a;
+    border: 2px solid var(--bg-0);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  }
+  .rank-1 .medal { background: linear-gradient(135deg, #ffe580, var(--accent)); box-shadow: 0 0 20px rgba(255, 216, 74, 0.4); }
+  .rank-2 .medal { background: linear-gradient(135deg, #e8edff, #b6c5e8); }
+  .rank-3 .medal { background: linear-gradient(135deg, #ffc99c, var(--orange)); }
+
+  .player-block {
+    display: flex; align-items: center; gap: 10px;
+    min-width: 0;
+  }
+  .avatar {
+    width: 34px; height: 34px;
+    border-radius: 4px;
+    display: grid; place-items: center;
+    font-family: "Russo One", sans-serif; font-size: 13px; color: #0b0f1a;
+    flex-shrink: 0; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1);
+  }
+  .player-text { min-width: 0; }
+  .player-text .role {
+    font-family: "Russo One", "Noto Sans TC", sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.04em;
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .player-text .real {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 3px;
+    letter-spacing: 0.1em;
+  }
+
+  .podium-score {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 30px;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    color: var(--division-color);
+  }
+  .rank-1 .podium-score {
+    font-size: 38px;
+    color: var(--accent);
+    text-shadow: 0 0 16px rgba(255, 216, 74, 0.5);
+  }
+
+  /* ===== Rest list under podium ===== */
+  .division-rest {
+    margin-top: 8px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--line);
+  }
+  .rest-row {
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 6px;
+    font-size: 15px;
+    border-bottom: 1px solid rgba(31, 42, 68, 0.4);
+  }
+  .rest-row:last-child { border-bottom: none; }
+  .rest-rank {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 20px;
+    color: var(--dim);
+    text-align: center;
+  }
+  .rest-name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+  .rest-name .mini-avatar {
+    width: 28px; height: 28px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    font-family: "Russo One", sans-serif;
+    font-size: 12px;
+    display: grid; place-items: center;
+    color: #0b0f1a;
+  }
+  .rest-name .role-name {
+    font-family: "Russo One", "Noto Sans TC", sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.04em;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .rest-name .real-name {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-left: 6px;
+  }
+  .rest-score {
+    font-family: "Bebas Neue", sans-serif;
+    font-weight: 400;
+    color: var(--text);
+    font-size: 22px;
+    letter-spacing: 0.02em;
+  }
+
+  .division-empty {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--dim);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+  }
+
+  /* ============ ERROR RATE BOARD ============ */
+  .error-board {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: rgba(12, 18, 32, 0.5);
+    padding: 22px 24px;
+    margin-bottom: 32px;
+  }
+  .eb-title {
+    font-family: "Russo One", sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+  .eb-title .glow { color: var(--accent-2); text-shadow: 0 0 18px rgba(255, 61, 104, 0.5); }
+  .eb-sub { font-family: "JetBrains Mono", monospace; color: var(--muted); font-size: 11px; letter-spacing: 0.2em; margin-bottom: 16px; }
+
+  .err-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+  }
+  .err-item {
+    display: grid;
+    grid-template-columns: 26px 1fr auto;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 4px;
+    background: rgba(6, 8, 15, 0.4);
+    border: 1px solid var(--line);
+  }
+  .err-item .err-mini-avatar {
+    width: 22px; height: 22px;
+    border-radius: 3px;
+    font-family: "Russo One", sans-serif;
+    font-size: 10px;
+    display: grid; place-items: center;
+    color: #0b0f1a;
+  }
+  .err-item .err-role { font-family: "Russo One", "Noto Sans TC", sans-serif; font-size: 13px; }
+  .err-item .err-real { font-family: "JetBrains Mono", monospace; font-size: 10px; color: var(--muted); }
+  .err-item .err-tag {
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    letter-spacing: 0.05em;
+  }
+  .err-tag.green  { color: var(--green);    background: rgba(61, 255, 166, 0.1); border: 1px solid rgba(61, 255, 166, 0.3); }
+  .err-tag.yellow { color: var(--accent);   background: rgba(255, 216, 74, 0.1); border: 1px solid rgba(255, 216, 74, 0.3); }
+  .err-tag.red    { color: var(--accent-2); background: rgba(255, 61, 104, 0.1); border: 1px solid rgba(255, 61, 104, 0.3); }
+
+  .err-empty {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--dim);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+  }
+
+  /* ============ MARQUEE ============ */
+  .marquee {
+    margin-top: 16px; padding: 14px 0;
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    overflow: hidden; background: rgba(12, 18, 32, 0.6); position: relative; border-radius: 4px;
+  }
+  .marquee-track {
+    display: flex; gap: 48px; white-space: nowrap; animation: scroll 90s linear infinite;
+    font-family: "JetBrains Mono", monospace; color: var(--muted); font-size: 12px; letter-spacing: 0.15em;
+  }
+  .marquee-track span { display: inline-flex; align-items: center; gap: 10px; }
+  .marquee-track .dot { width: 4px; height: 4px; background: var(--accent); border-radius: 50%; }
+  @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  .credit { text-align: center; margin-top: 22px; color: var(--dim); font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: 0.3em; }
+
+  .anim-in { opacity: 0; transform: translateY(12px); animation: fadeUp 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+  @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+  /* ============ LOADING / ERROR ============ */
+  .loading-overlay {
+    position: fixed; inset: 0; background: rgba(6, 8, 15, 0.85); backdrop-filter: blur(8px);
+    display: grid; place-items: center; z-index: 999; transition: opacity 0.4s ease;
+  }
+  .loading-overlay.hidden { opacity: 0; pointer-events: none; }
+  .loading-spinner {
+    width: 60px; height: 60px;
+    border: 3px solid var(--line); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 18px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-family: "Russo One", sans-serif; color: var(--accent); letter-spacing: 0.2em; font-size: 14px; text-align: center; }
+  .loading-sub { margin-top: 10px; font-family: "JetBrains Mono", monospace; color: var(--muted); font-size: 11px; letter-spacing: 0.15em; text-align: center; }
+
+  .error-banner {
+    border: 1px solid var(--accent-2); background: rgba(255, 61, 104, 0.08); color: var(--accent-2);
+    padding: 14px 18px; border-radius: 4px; margin-bottom: 18px;
+    font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: 0.1em; display: none;
+  }
+  .error-banner.visible { display: block; }
+  .error-banner b { color: #fff; letter-spacing: 0.2em; }
+
+  /* ============ DEBUG MODAL ============ */
+  .debug-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(6, 8, 15, 0.92);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+  }
+  .debug-modal.visible { display: flex; }
+  .debug-modal-box {
+    background: var(--bg-1);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    max-width: 800px;
+    width: 100%;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 60px rgba(255, 216, 74, 0.25);
+  }
+  .debug-modal-head {
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .debug-modal-head h3 {
+    font-family: "Russo One", sans-serif;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    font-size: 16px;
+  }
+  .debug-modal-close {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--text);
+    width: 32px; height: 32px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+  }
+  .debug-modal-close:hover { border-color: var(--accent-2); color: var(--accent-2); }
+  .debug-modal-body {
+    padding: 20px 22px;
+    overflow-y: auto;
+    flex: 1;
+  }
+  .debug-modal-body pre {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    color: var(--cyan);
+    white-space: pre-wrap;
+    word-break: break-all;
+    line-height: 1.7;
+  }
+  .debug-modal-actions {
+    padding: 14px 22px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+
+  /* ============ RESPONSIVE ============ */
+  /* 預設強制三欄並排，無論寬度怎麼變 */
+  .podium-trio {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+  /* 中等螢幕：縮小元素以維持並排 */
+  @media (max-width: 1280px) {
+    .division { padding: 16px 12px 18px; }
+    .division-header h2 { font-size: 18px; }
+    .division-header .division-icon { font-size: 9px; padding: 2px 8px; }
+    .division-header .total { font-size: 18px; }
+    .podium-row { padding: 10px 10px; gap: 8px; grid-template-columns: 36px 1fr auto; }
+    .medal { width: 30px; height: 30px; font-size: 14px; }
+    .avatar { width: 28px; height: 28px; font-size: 12px; }
+    .player-text .role { font-size: 13px; }
+    .player-text .real { font-size: 9px; }
+    .podium-score { font-size: 24px; }
+    .rank-1 .podium-score { font-size: 30px; }
+    .rest-row { font-size: 14px; padding: 9px 4px; }
+    .rest-name .role-name { font-size: 14px; }
+    .rest-score { font-size: 20px; }
+    .wrap { padding: 20px 16px 60px; }
+    .channel-card { padding: 12px 10px 14px; }
+    .channel-card .ch-num { font-size: 24px; }
+    .channel-card .ch-name { font-size: 12px; }
+    .os-card .os-num { font-size: 48px; }
+    .os-card .os-label { font-size: 12px; }
+    .os-card { padding: 16px 18px; }
+  }
+  @media (max-width: 1024px) {
+    .channels-grid { grid-template-columns: repeat(4, 1fr); }
+    .order-status { grid-template-columns: repeat(2, 1fr); }
+  }
+  /* 只有手機（< 768px）才允許上下堆疊 */
+  @media (max-width: 768px) {
+    .podium-trio {
+      grid-template-columns: 1fr !important;
+      gap: 16px;
+    }
+    .order-status { grid-template-columns: 1fr; }
+    header.top { grid-template-columns: 1fr; text-align: left; }
+    .header-mid { justify-content: flex-start; }
+    .live-clock { text-align: left; }
+    .channels-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading">
+  <div>
+    <div class="loading-spinner"></div>
+    <div class="loading-text">CONNECTING TO GRAND LINE</div>
+    <div class="loading-sub">SYNCING WITH GOOGLE SHEET...</div>
+  </div>
+</div>
+
+<!-- Debug Modal -->
+<div class="debug-modal" id="debug-modal">
+  <div class="debug-modal-box">
+    <div class="debug-modal-head">
+      <h3>🔍 通路資料除錯</h3>
+      <button class="debug-modal-close" id="debug-close">✕</button>
+    </div>
+    <div class="debug-modal-body">
+      <pre id="debug-content"></pre>
+    </div>
+    <div class="debug-modal-actions">
+      <button class="sync-btn" id="debug-copy">📋 複製內容</button>
+      <button class="sync-btn" id="debug-close-2">關閉</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <header class="top anim-in" style="animation-delay: 0s">
+    <div class="brand">
+      <div class="logo-mark">G</div>
+      <div class="brand-text">
+        <div class="title">出貨<span class="accent">戰績榜</span></div>
+        <div class="sub">GRAND LINE LOGISTICS · LIVE BATTLE STATS</div>
+      </div>
+    </div>
+    <div class="header-mid" id="header-channels">
+      <!-- channels rendered here as compact pills -->
+    </div>
+    <div class="live-clock">
+      <div class="date" id="date-str">— —</div>
+      <div class="time"><span class="live-dot"></span><span id="clock">00:00:00</span></div>
+    </div>
+  </header>
+
+  <div class="sync-bar anim-in" style="animation-delay: 0.05s">
+    <div class="sync-left">
+      <div class="sync-status idle" id="sync-status">
+        <span class="lamp"></span>
+        <span class="sync-label" id="sync-label">已同步</span>
+      </div>
+      <div>最後更新：<span id="last-sync">—</span></div>
+      <div>下次更新：<span class="countdown" id="countdown">30s</span></div>
+    </div>
+    <button class="sync-btn" id="manual-sync">立即重新整理</button>
+    <button class="sync-btn" id="debug-btn" style="margin-left: 8px;">🔍 通路除錯</button>
+  </div>
+
+  <div id="error-banner" class="error-banner">
+    <b>連線失敗</b> · 無法讀取 Google Sheet。請確認共用設定為「知道連結的任何人都可檢視」。錯誤：<span id="error-detail">—</span>
+  </div>
+
+  <div class="anim-in" style="animation-delay: 0.1s">
+    <div class="switcher" id="switcher">
+      <div class="switch-indicator" id="switch-indicator"></div>
+      <button class="switch-btn active" data-mode="daily">當日戰報</button>
+      <button class="switch-btn" data-mode="monthly">當月累計</button>
+    </div>
+  </div>
+
+  <!-- Today order status: total / pick / check / pack -->
+  <div class="order-status anim-in" style="animation-delay: 0.15s">
+    <div class="os-card os-total">
+      <div class="os-label">今日總訂單</div>
+      <div class="os-num" id="os-total">0</div>
+      <div class="os-foot">TOTAL ORDERS</div>
+    </div>
+    <div class="os-card os-pick">
+      <div class="os-label">已拿貨</div>
+      <div class="os-num" id="os-pick">0</div>
+      <div class="os-foot">剩 <span id="os-pick-remain">0</span> 單</div>
+    </div>
+    <div class="os-card os-check">
+      <div class="os-label">已檢貨</div>
+      <div class="os-num" id="os-check">0</div>
+      <div class="os-foot">剩 <span id="os-check-remain">0</span> 單</div>
+    </div>
+    <div class="os-card os-pack">
+      <div class="os-label">已包貨</div>
+      <div class="os-num" id="os-pack">0</div>
+      <div class="os-foot">剩 <span id="os-pack-remain">0</span> 單</div>
+    </div>
+  </div>
+
+  <!-- Three division podiums -->
+  <section class="podium-trio anim-in" style="animation-delay: 0.35s">
+
+    <div class="division pick">
+      <div class="division-header">
+        <span class="division-icon">PICK</span>
+        <h2>拿貨王</h2>
+        <span class="total"><span id="div-pick-total">0</span><span class="unit">件</span></span>
+      </div>
+      <div class="podium-stack" id="podium-pick"></div>
+      <div class="division-rest" id="rest-pick"></div>
+    </div>
+
+    <div class="division check">
+      <div class="division-header">
+        <span class="division-icon">CHECK</span>
+        <h2>檢貨王</h2>
+        <span class="total"><span id="div-check-total">0</span><span class="unit">件</span></span>
+      </div>
+      <div class="podium-stack" id="podium-check"></div>
+      <div class="division-rest" id="rest-check"></div>
+    </div>
+
+    <div class="division pack">
+      <div class="division-header">
+        <span class="division-icon">PACK</span>
+        <h2>包貨王</h2>
+        <span class="total"><span id="div-pack-total">0</span><span class="unit">件</span></span>
+      </div>
+      <div class="podium-stack" id="podium-pack"></div>
+      <div class="division-rest" id="rest-pack"></div>
+    </div>
+
+  </section>
+
+  <!-- Error rate watch panel -->
+  <section class="error-board anim-in" style="animation-delay: 0.4s">
+    <div class="eb-title">錯誤率 <span class="glow">WATCHLIST</span></div>
+    <div class="eb-sub">只顯示有拿貨紀錄的選手 · 紅 ≥ 1.5%　黃 &lt; 1.5%　綠 = 0%</div>
+    <div class="err-grid" id="err-grid"></div>
+  </section>
+
+  <div class="marquee anim-in" style="animation-delay: 0.45s">
+    <div class="marquee-track" id="marquee-track"></div>
+  </div>
+
+  <div class="credit">POWERED BY THE STRAW HAT CREW · ALL HANDS ON DECK</div>
+</div>
+
+<script>
+  /* ============================================================
+     CONFIG
+     ============================================================ */
+  const SHEET_ID  = "1evX8i_dboozImkVW4W_boE9o4MMpVl_vVyf6PVBVttk";
+  const SHEET_GID = "608484608";
+  const DETAIL_GID = "639630146";   // 「當日明細」的副本
+  const REFRESH_INTERVAL_MS = 30 * 1000;
+  const DAILY_RANGE   = "A2:J28";
+  const MONTHLY_RANGE = "A32:K58";
+  // 戰況列：C27=已拿、D27=已檢、E27=已包
+  // B29=總訂單，C29~F29=完成率，G29~M29=七個通路
+  const DETAIL_TOTALS_RANGE = "B27:M30";
+  const CHANNEL_NAMES = ["蝦皮", "四大", "新竹", "黑貓", "官網四大", "嘉里大榮", "補寄"];
+  const CHANNEL_ICONS = ["🛒", "📦", "🚚", "🐈", "🏪", "📮", "🔄"];
+  const CHANNEL_COLORS = ["#ff5e3a", "#ffd84a", "#3dffa6", "#1a1a1a", "#7da3ff", "#b66dff", "#ff8a3d"];
+
+  const COLOR_MAP = {
+    "白星":["#ff9ec5","#ffd1e3"],"火拳艾斯":["#ff5b2e","#ffaa70"],"傑克":["#5a3826","#a07050"],
+    "布琳":["#ff7eb3","#ffc1d6"],"喬巴":["#ff6b6b","#ffcdcd"],"凱多":["#7da3ff","#c0d2ff"],
+    "吉貝爾":["#5ec0ff","#a9dcff"],"騙人布":["#d4b35a","#f0d690"],"蕾貝卡":["#ff5b8a","#ffadc4"],
+    "大熊":["#3a3a3a","#7c7c7c"],"碧歐拉":["#a06bff","#cfb3ff"],"布魯克":["#1a1a1a","#666666"],
+    "伊希莉":["#9c5fb5","#c89adb"],"索隆":["#3dffa6","#a6ffd4"],"魯夫":["#ff3d3d","#ff9090"],
+    "娜美":["#ffb74d","#ffd99c"],"妮可羅賓":["#7c4dff","#b89cff"],"薩波":["#1ec8c8","#7ce4e4"],
+    "薇薇":["#42a5f5","#90c8f8"],"蛇姬":["#ff4d8c","#ffa8c4"],"佛朗基":["#00bcd4","#7be4ee"],
+    "巴其":["#ff5e3a","#ffac99"],"美音":["#ba68c8","#dba9e0"],"香吉士":["#ffd84a","#ffe899"],
+    "羅傑":["#c9a227","#e6cc6e"],"可雅":["#fff59d","#fffbcc"],"艾涅爾":["#ffd700","#ffec80"]
+  };
+  const FALLBACK = [["#7da3ff","#c0d2ff"],["#ff6b6b","#ffcdcd"],["#3dffa6","#a6ffd4"],["#ffb74d","#ffd99c"],["#a06bff","#cfb3ff"],["#1ec8c8","#7ce4e4"]];
+
+  let DAILY_DATA = [];
+  let MONTHLY_DATA = [];
+  let currentMode = "daily";
+  let countdown = 30;
+  let countdownTimer = null;
+  let refreshTimer = null;
+  const previousNumbers = {};
+
+  const $ = s => document.querySelector(s);
+  const fmt = n => Number(n || 0).toLocaleString("en-US");
+
+  function errorRate(p) {
+    if (!p.pick) return null;
+    return p.picked_wrong / p.pick;
+  }
+  function rateClass(rate) {
+    if (rate === null) return "dim";
+    if (rate === 0) return "green";
+    if (rate < 0.015) return "yellow";
+    return "red";
+  }
+  function getColors(role, idx) {
+    return COLOR_MAP[role] || FALLBACK[idx % FALLBACK.length];
+  }
+
+  function cellValue(cell) {
+    if (!cell) return null;
+    if (cell.v === null || cell.v === undefined) return null;
+    if (typeof cell.v === "number") return cell.v;
+    const s = String(cell.v).trim();
+    if (s === "" || s === "#REF!") return null;
+    return s;
+  }
+  function toNum(v) {
+    if (v === null || v === undefined || v === "") return 0;
+    const n = Number(String(v).replace(/[%,\s]/g, ""));
+    return isNaN(n) ? 0 : n;
+  }
+
+  /* ============================================================
+     FETCH
+     ============================================================ */
+  async function fetchRange(range, gid) {
+    const useGid = gid || SHEET_GID;
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${useGid}&range=${encodeURIComponent(range)}&tqx=out:json&_=${Date.now()}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await res.text();
+    const match = text.match(/setResponse\(([\s\S]*)\);?\s*$/);
+    if (!match) throw new Error("回應格式異常（檢查共用權限）");
+    const json = JSON.parse(match[1]);
+    if (json.status === "error") {
+      throw new Error(json.errors?.[0]?.detailed_message || "未知錯誤");
+    }
+    return json.table;
+  }
+
+  function parseRows(rows) {
+    return rows.map(r => {
+      const c = r.c || [];
+      const role = cellValue(c[0]);
+      if (!role) return null;
+      return {
+        role: String(role).trim(),
+        name: String(cellValue(c[1]) || "").trim(),
+        pick:  toNum(cellValue(c[2])),
+        check: toNum(cellValue(c[3])),
+        pack:  toNum(cellValue(c[4])),
+        picked_wrong: toNum(cellValue(c[5]))
+      };
+    }).filter(Boolean);
+  }
+
+  let DETAIL_DATA = null;
+  let DETAIL_ERROR = null;
+
+  async function loadData() {
+    setSyncStatus("syncing", "同步中…");
+    DETAIL_ERROR = null;
+    try {
+      const [daily, monthly, detail] = await Promise.all([
+        fetchRange(DAILY_RANGE),
+        fetchRange(MONTHLY_RANGE),
+        fetchRange(DETAIL_TOTALS_RANGE, DETAIL_GID).catch(err => {
+          DETAIL_ERROR = err.message || String(err);
+          console.error("Detail fetch failed:", err);
+          return null;
+        })
+      ]);
+      DAILY_DATA = parseRows(daily.rows || []);
+      MONTHLY_DATA = parseRows(monthly.rows || []);
+      DETAIL_DATA = detail ? parseDetailTotals(detail) : null;
+
+      renderAll(currentMode === "daily" ? DAILY_DATA : MONTHLY_DATA);
+      renderOrderStatus(DETAIL_DATA, DAILY_DATA);
+      renderChannels(DETAIL_DATA);
+
+      const now = new Date();
+      const pad = n => String(n).padStart(2, "0");
+      $("#last-sync").textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+
+      if (DETAIL_ERROR) {
+        setSyncStatus("error", "通路資料讀取失敗");
+        $("#error-detail").textContent = `當日明細分頁讀取失敗：${DETAIL_ERROR}（人員資料正常）`;
+        $("#error-banner").classList.add("visible");
+      } else {
+        setSyncStatus("idle", "已同步");
+        $("#error-banner").classList.remove("visible");
+      }
+      $("#loading").classList.add("hidden");
+    } catch (err) {
+      console.error("Fetch error:", err);
+      setSyncStatus("error", "連線失敗");
+      $("#error-detail").textContent = err.message || String(err);
+      $("#error-banner").classList.add("visible");
+      $("#loading").classList.add("hidden");
+    }
+  }
+
+  // 解析 C27:N30 範圍
+  // C27="已完成"標籤，D27=拿貨完成、E27=檢貨完成、F27=包貨完成
+  // C28="總共"、D28~G28=完成率標籤、H28~N28=通路名標籤
+  // C29=總單、D29~G29=完成率值、H29~N29=通路值
+  // C30="蝦皮剩餘"、D30=蝦皮剩餘值、F30="整體剩餘"、G30=整體剩餘值
+  function parseDetailTotals(table) {
+    const rows = table.rows || [];
+    const get = (rowIdx, colIdx) => {
+      const row = rows[rowIdx];
+      if (!row || !row.c) return null;
+      return cellValue(row.c[colIdx]);
+    };
+
+    // 範圍 B27:M30（共 12 欄，0-indexed: B=0 C=1 D=2 E=3 F=4 G=5 H=6 I=7 J=8 K=9 L=10 M=11）
+    // 列：0=row27, 1=row28, 2=row29, 3=row30
+    //
+    // row27 (已完成):  C27=已拿 D27=已檢 E27=已包  → col 1, 2, 3
+    // row29 (數值):    B29=總訂單  C29~F29=四個完成率  G29~M29=七通路 → col 0, 1-4, 5-11
+
+    const result = {
+      pickDone:  toNum(get(0, 1)),  // C27
+      checkDone: toNum(get(0, 2)),  // D27
+      packDone:  toNum(get(0, 3)),  // E27
+      total:     toNum(get(2, 0)),  // B29
+      pickRate:  toNum(get(2, 1)),  // C29
+      checkRate: toNum(get(2, 2)),  // D29
+      packRate:  toNum(get(2, 3)),  // E29
+      totalRate: toNum(get(2, 4)),  // F29
+      channels:  []
+    };
+
+    // G29~M29 對應 col 5-11
+    for (let i = 0; i < 7; i++) {
+      result.channels.push(toNum(get(2, 5 + i)));
+    }
+
+    // ===== DEBUG INFO =====
+    const debugLines = [];
+    debugLines.push(`▼ 從「當日明細的副本」分頁抓到的原始資料：`);
+    debugLines.push(``);
+    debugLines.push(`第 27 列（已完成）：`);
+    debugLines.push(`  B27 = "${get(0, 0)}"`);
+    debugLines.push(`  C27 (已拿) = ${get(0, 1)}`);
+    debugLines.push(`  D27 (已檢) = ${get(0, 2)}`);
+    debugLines.push(`  E27 (已包) = ${get(0, 3)}`);
+    debugLines.push(``);
+    debugLines.push(`第 28 列（標題）：`);
+    debugLines.push(`  B28 = "${get(1, 0)}"   C28 = "${get(1, 1)}"   D28 = "${get(1, 2)}"`);
+    debugLines.push(`  E28 = "${get(1, 3)}"   F28 = "${get(1, 4)}"`);
+    debugLines.push(`  G28 = "${get(1, 5)}"   H28 = "${get(1, 6)}"   I28 = "${get(1, 7)}"`);
+    debugLines.push(`  J28 = "${get(1, 8)}"   K28 = "${get(1, 9)}"   L28 = "${get(1, 10)}"   M28 = "${get(1, 11)}"`);
+    debugLines.push(``);
+    debugLines.push(`第 29 列（數值）：`);
+    debugLines.push(`  B29 (總訂單) = ${get(2, 0)}`);
+    debugLines.push(`  C29 (拿貨率) = ${get(2, 1)}   D29 (檢貨率) = ${get(2, 2)}`);
+    debugLines.push(`  E29 (包貨率) = ${get(2, 3)}   F29 (總率) = ${get(2, 4)}`);
+    debugLines.push(`  G29 (蝦皮) = ${get(2, 5)}   H29 (四大) = ${get(2, 6)}`);
+    debugLines.push(`  I29 (新竹) = ${get(2, 7)}   J29 (黑貓) = ${get(2, 8)}`);
+    debugLines.push(`  K29 (官網四大) = ${get(2, 9)}   L29 (嘉里大榮) = ${get(2, 10)}`);
+    debugLines.push(`  M29 (補寄) = ${get(2, 11)}`);
+
+    if (typeof window !== "undefined") {
+      window.__detailDebug = debugLines.join("\n");
+      console.log(window.__detailDebug);
+    }
+
+    return result;
+  }
+
+  function setSyncStatus(state, label) {
+    const el = $("#sync-status");
+    el.classList.remove("idle", "syncing", "error");
+    el.classList.add(state);
+    $("#sync-label").textContent = label;
+  }
+
+  /* ============================================================
+     RENDER
+     ============================================================ */
+  function renderAll(data) {
+    // 給領獎台 header 用的總計
+    const sumPick  = data.reduce((s, p) => s + p.pick, 0);
+    const sumCheck = data.reduce((s, p) => s + p.check, 0);
+    const sumPack  = data.reduce((s, p) => s + p.pack, 0);
+
+    $("#div-pick-total").textContent  = fmt(sumPick);
+    $("#div-check-total").textContent = fmt(sumCheck);
+    $("#div-pack-total").textContent  = fmt(sumPack);
+
+    // 三個職務領獎台
+    renderDivision(data, "pick");
+    renderDivision(data, "check");
+    renderDivision(data, "pack");
+
+    // 錯誤率區
+    renderErrorBoard(data);
+
+    // 跑馬燈
+    renderMarquee(data);
+  }
+
+  // 今日訂單狀況：總訂單、已拿/檢/包、各自剩餘
+  function renderOrderStatus(d, fallbackData) {
+    let total, pickDone, checkDone, packDone;
+
+    if (d) {
+      // 從「當日明細」分頁拿到的資料優先
+      total     = d.total || 0;
+      pickDone  = d.pickDone  || 0;
+      checkDone = d.checkDone || 0;
+      packDone  = d.packDone  || 0;
+    } else if (fallbackData) {
+      // detail 沒抓到 → 用人員加總當作已處理量（無法得知總訂單）
+      pickDone  = fallbackData.reduce((s, p) => s + p.pick,  0);
+      checkDone = fallbackData.reduce((s, p) => s + p.check, 0);
+      packDone  = fallbackData.reduce((s, p) => s + p.pack,  0);
+      total     = Math.max(pickDone, checkDone, packDone);
+    } else {
+      total = pickDone = checkDone = packDone = 0;
+    }
+
+    const pickRemain  = Math.max(total - pickDone,  0);
+    const checkRemain = Math.max(total - checkDone, 0);
+    const packRemain  = Math.max(total - packDone,  0);
+
+    setNumber("os-total", total);
+    setNumber("os-pick",  pickDone);
+    setNumber("os-check", checkDone);
+    setNumber("os-pack",  packDone);
+    $("#os-pick-remain").textContent  = fmt(pickRemain);
+    $("#os-check-remain").textContent = fmt(checkRemain);
+    $("#os-pack-remain").textContent  = fmt(packRemain);
+
+    // 剩 0 → 綠色提示
+    document.querySelector(".os-pick").classList.toggle("done",  pickRemain === 0 && pickDone > 0);
+    document.querySelector(".os-check").classList.toggle("done", checkRemain === 0 && checkDone > 0);
+    document.querySelector(".os-pack").classList.toggle("done",  packRemain === 0 && packDone > 0);
+  }
+
+  function renderChannels(d) {
+    const headerEl = $("#header-channels");
+    headerEl.innerHTML = "";
+
+    if (!d || !d.channels) return;
+
+    CHANNEL_NAMES.forEach((name, i) => {
+      const value = d.channels[i] || 0;
+      const pill = document.createElement("div");
+      pill.className = `ch-pill ${value === 0 ? "zero" : ""}`;
+      pill.style.setProperty("--ch-color", CHANNEL_COLORS[i]);
+      pill.innerHTML = `
+        <div class="ch-pill-name"><span class="ch-pill-icon">${CHANNEL_ICONS[i]}</span>${name}</div>
+        <div class="ch-pill-num">${fmt(value)}</div>
+      `;
+      headerEl.appendChild(pill);
+    });
+  }
+
+  function renderDivision(data, key) {
+    const sorted = data
+      .filter(p => p[key] > 0)
+      .sort((a, b) => b[key] - a[key]);
+
+    const podiumEl = $(`#podium-${key}`);
+    const restEl = $(`#rest-${key}`);
+    podiumEl.innerHTML = "";
+    restEl.innerHTML = "";
+
+    if (sorted.length === 0) {
+      podiumEl.innerHTML = `<div class="division-empty">— 尚無出動紀錄 —</div>`;
+      return;
+    }
+
+    const top3 = sorted.slice(0, 3);
+    top3.forEach((p, i) => {
+      const rank = i + 1;
+      const colors = getColors(p.role, i);
+      const row = document.createElement("div");
+      row.className = `podium-row rank-${rank}`;
+      row.innerHTML = `
+        <div class="medal">${rank}</div>
+        <div class="player-block">
+          <div class="avatar" style="background: linear-gradient(135deg, ${colors[0]}, ${colors[1]});">${p.role.charAt(0)}</div>
+          <div class="player-text">
+            <div class="role">${p.role}</div>
+            <div class="real">${p.name || "未指派"}</div>
+          </div>
+        </div>
+        <div class="podium-score">${fmt(p[key])}</div>
+      `;
+      podiumEl.appendChild(row);
+    });
+
+    // Remaining (4th onwards)
+    const rest = sorted.slice(3);
+    rest.forEach((p, i) => {
+      const colors = getColors(p.role, i + 3);
+      const row = document.createElement("div");
+      row.className = "rest-row";
+      row.innerHTML = `
+        <div class="rest-rank">${i + 4}</div>
+        <div class="rest-name">
+          <div class="mini-avatar" style="background: linear-gradient(135deg, ${colors[0]}, ${colors[1]});">${p.role.charAt(0)}</div>
+          <span class="role-name">${p.role}</span>
+          <span class="real-name">${p.name || ""}</span>
+        </div>
+        <div class="rest-score">${fmt(p[key])}</div>
+      `;
+      restEl.appendChild(row);
+    });
+  }
+
+  function renderErrorBoard(data) {
+    const grid = $("#err-grid");
+    grid.innerHTML = "";
+
+    // Only show those with pick activity, sorted: red > yellow > green
+    const candidates = data
+      .filter(p => p.pick > 0)
+      .map(p => ({ ...p, _rate: errorRate(p) }))
+      .sort((a, b) => {
+        // Higher rate first; null at the end
+        if (a._rate === null) return 1;
+        if (b._rate === null) return -1;
+        return b._rate - a._rate;
+      });
+
+    if (candidates.length === 0) {
+      grid.innerHTML = `<div class="err-empty">— 今日無拿貨紀錄 —</div>`;
+      return;
+    }
+
+    candidates.forEach((p, i) => {
+      const colors = getColors(p.role, i);
+      const cls = rateClass(p._rate);
+      const label = p._rate === null ? "—" : (p._rate * 100).toFixed(2) + "%";
+      const item = document.createElement("div");
+      item.className = "err-item";
+      item.innerHTML = `
+        <div class="err-mini-avatar" style="background: linear-gradient(135deg, ${colors[0]}, ${colors[1]});">${p.role.charAt(0)}</div>
+        <div>
+          <div class="err-role">${p.role}</div>
+          <div class="err-real">${p.name || "未指派"} · 拿 ${fmt(p.pick)} / 錯 ${fmt(p.picked_wrong)}</div>
+        </div>
+        <span class="err-tag ${cls}">${label}</span>
+      `;
+      grid.appendChild(item);
+    });
+  }
+
+  function renderMarquee(data) {
+    const track = $("#marquee-track");
+    const items = [];
+
+    // Combine top-3 of each division for marquee
+    ["pick", "check", "pack"].forEach(k => {
+      const top = data.filter(p => p[k] > 0).sort((a, b) => b[k] - a[k]).slice(0, 3);
+      const labels = { pick: "拿貨", check: "檢貨", pack: "包貨" };
+      top.forEach((p, i) => {
+        items.push(`<span><span class="dot"></span>${labels[k]} #${i+1} ${p.role} ${fmt(p[k])} 件</span>`);
+      });
+    });
+
+    if (items.length === 0) {
+      track.innerHTML = `<span><span class="dot"></span>等候船員出戰中…</span>`;
+    } else {
+      const html = items.join("");
+      track.innerHTML = html + html;
+    }
+  }
+
+  function setNumber(id, value) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const old = previousNumbers[id];
+    el.textContent = typeof value === "number" ? fmt(value) : String(value);
+    if (old !== undefined && old !== value) {
+      el.classList.remove("flash");
+      void el.offsetWidth;
+      el.classList.add("flash");
+    }
+    previousNumbers[id] = value;
+  }
+
+  function showDebugModal(text) {
+    $("#debug-content").textContent = text;
+    $("#debug-modal").classList.add("visible");
+  }
+  function hideDebugModal() {
+    $("#debug-modal").classList.remove("visible");
+  }
+
+  function setIndicator(btn) {
+    const indicator = $("#switch-indicator");
+    indicator.style.left = btn.offsetLeft + "px";
+    indicator.style.width = btn.offsetWidth + "px";
+  }
+
+  function startCountdown() {
+    countdown = REFRESH_INTERVAL_MS / 1000;
+    if (countdownTimer) clearInterval(countdownTimer);
+    countdownTimer = setInterval(() => {
+      countdown--;
+      if (countdown < 0) countdown = REFRESH_INTERVAL_MS / 1000;
+      $("#countdown").textContent = countdown + "s";
+    }, 1000);
+  }
+
+  function startAutoRefresh() {
+    if (refreshTimer) clearInterval(refreshTimer);
+    refreshTimer = setInterval(async () => {
+      await loadData();
+      startCountdown();
+    }, REFRESH_INTERVAL_MS);
+  }
+
+  function startClock() {
+    function tick() {
+      const d = new Date();
+      const pad = n => String(n).padStart(2, "0");
+      $("#clock").textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+      $("#date-str").textContent = `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} · ${["SUN","MON","TUE","WED","THU","FRI","SAT"][d.getDay()]}`;
+    }
+    tick();
+    setInterval(tick, 1000);
+  }
+
+  async function init() {
+    const buttons = document.querySelectorAll(".switch-btn");
+    setIndicator(buttons[0]);
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        buttons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        setIndicator(btn);
+        currentMode = btn.dataset.mode;
+        renderAll(currentMode === "daily" ? DAILY_DATA : MONTHLY_DATA);
+      });
+    });
+    window.addEventListener("resize", () => {
+      const active = document.querySelector(".switch-btn.active");
+      if (active) setIndicator(active);
+    });
+    $("#manual-sync").addEventListener("click", async () => {
+      await loadData();
+      startCountdown();
+    });
+    $("#debug-btn").addEventListener("click", () => {
+      const info = window.__detailDebug || "(尚未抓到資料，請先按「立即重新整理」)";
+      showDebugModal(info);
+    });
+    $("#debug-close").addEventListener("click", hideDebugModal);
+    $("#debug-close-2").addEventListener("click", hideDebugModal);
+    $("#debug-copy").addEventListener("click", () => {
+      const text = $("#debug-content").textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        $("#debug-copy").textContent = "✓ 已複製";
+        setTimeout(() => { $("#debug-copy").textContent = "📋 複製內容"; }, 2000);
+      }).catch(() => {
+        // fallback
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        $("#debug-copy").textContent = "✓ 已複製";
+        setTimeout(() => { $("#debug-copy").textContent = "📋 複製內容"; }, 2000);
+      });
+    });
+    $("#debug-modal").addEventListener("click", (e) => {
+      if (e.target.id === "debug-modal") hideDebugModal();
+    });
+    startClock();
+    await loadData();
+    startCountdown();
+    startAutoRefresh();
+  }
+
+  init();
+</script>
+</body>
+</html>
