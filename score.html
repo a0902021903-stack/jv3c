@@ -400,15 +400,31 @@
   }
   .podium-row {
     display: grid;
-    grid-template-columns: 44px 1fr auto;
+    grid-template-columns: 36px 1fr auto;
     align-items: center;
-    gap: 12px;
-    padding: 14px 14px;
+    gap: 10px;
+    padding: 12px 12px;
     border-radius: 4px;
     background: rgba(6, 8, 15, 0.5);
     border: 1px solid var(--line);
     position: relative;
     overflow: hidden;
+  }
+  /* 拿貨王特例：多一欄給錯誤率 */
+  .division.pick .podium-row {
+    grid-template-columns: 36px 1fr auto auto;
+  }
+  .podium-err {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+  }
+  .podium-err .err-count {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
   }
   .podium-row.rank-1 {
     background: linear-gradient(90deg, rgba(255, 216, 74, 0.18), rgba(255, 216, 74, 0.04));
@@ -495,6 +511,22 @@
     border-bottom: 1px solid rgba(31, 42, 68, 0.4);
   }
   .rest-row:last-child { border-bottom: none; }
+  /* 拿貨王特例：多一欄給錯誤率 */
+  .division.pick .rest-row {
+    grid-template-columns: 32px 1fr auto auto;
+  }
+  .rest-err {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+  }
+  .rest-err .err-count {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
   .rest-rank {
     font-family: "Bebas Neue", sans-serif;
     font-size: 20px;
@@ -548,50 +580,8 @@
     letter-spacing: 0.2em;
   }
 
-  /* ============ ERROR SECTION (合併在拿貨王下方) ============ */
-  .error-section {
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px dashed var(--line);
-  }
-  .error-section-title {
-    font-family: "Russo One", "Noto Sans TC", sans-serif;
-    color: var(--accent-2);
-    font-size: 12px;
-    letter-spacing: 0.18em;
-    margin-bottom: 8px;
-    text-shadow: 0 0 10px rgba(255, 61, 104, 0.4);
-  }
-  .error-section-list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .err-row {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 8px;
-    border-radius: 3px;
-    background: rgba(6, 8, 15, 0.4);
-    border: 1px solid var(--line);
-    font-size: 12px;
-  }
-  .err-row .err-name {
-    font-family: "Russo One", "Noto Sans TC", sans-serif;
-    color: var(--text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .err-row .err-name .err-real {
-    font-family: "JetBrains Mono", monospace;
-    color: var(--muted);
-    font-size: 10px;
-    margin-left: 4px;
-  }
-  .err-row .err-tag {
+  /* ============ ERROR TAG (用在拿貨王每一行) ============ */
+  .err-tag {
     font-family: "JetBrains Mono", monospace;
     font-weight: 700;
     font-size: 11px;
@@ -602,16 +592,16 @@
   .err-tag.green  { color: var(--green);    background: rgba(61, 255, 166, 0.1); border: 1px solid rgba(61, 255, 166, 0.3); }
   .err-tag.yellow { color: var(--accent);   background: rgba(255, 216, 74, 0.1); border: 1px solid rgba(255, 216, 74, 0.3); }
   .err-tag.red    { color: var(--accent-2); background: rgba(255, 61, 104, 0.1); border: 1px solid rgba(255, 61, 104, 0.3); }
-  .err-empty {
-    text-align: center;
-    padding: 14px 8px;
-    color: var(--dim);
-    font-family: "JetBrains Mono", monospace;
-    font-size: 11px;
-  }
+  .err-tag.dim    { color: var(--dim);      background: transparent; border: 1px dashed var(--line); }
 
   .anim-in { opacity: 0; transform: translateY(12px); animation: fadeUp 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
   @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+  /* 當月累計時，隱藏通路條和今日訂單（這兩個是當日才有意義） */
+  body.mode-monthly .channels-strip,
+  body.mode-monthly .order-status {
+    display: none;
+  }
 
   /* ============ LOADING / ERROR ============ */
   .loading-overlay {
@@ -855,10 +845,6 @@
       </div>
       <div class="podium-stack" id="podium-pick"></div>
       <div class="division-rest" id="rest-pick"></div>
-      <div class="error-section">
-        <div class="error-section-title">⚠ 錯誤率</div>
-        <div class="error-section-list" id="err-list"></div>
-      </div>
     </div>
 
     <div class="division check">
@@ -1123,9 +1109,6 @@
     renderDivision(data, "pick");
     renderDivision(data, "check");
     renderDivision(data, "pack");
-
-    // 錯誤率區（合併在拿貨王下方）
-    renderErrorBoard(data);
   }
 
   // 今日訂單狀況：總訂單、已拿/檢/包、各自剩餘
@@ -1206,6 +1189,19 @@
       const colors = getColors(p.role, i);
       const row = document.createElement("div");
       row.className = `podium-row rank-${rank}`;
+
+      // 拿貨王才顯示錯誤率
+      let errBlock = "";
+      if (key === "pick") {
+        const rate = errorRate(p);
+        const cls = rateClass(rate);
+        const rateLabel = rate === null ? "—" : (rate * 100).toFixed(2) + "%";
+        errBlock = `<div class="podium-err">
+          <span class="err-tag ${cls}">${rateLabel}</span>
+          <span class="err-count">錯 ${fmt(p.picked_wrong)}</span>
+        </div>`;
+      }
+
       row.innerHTML = `
         <div class="medal">${rank}</div>
         <div class="player-block">
@@ -1215,6 +1211,7 @@
             <div class="real">${p.name || "未指派"}</div>
           </div>
         </div>
+        ${errBlock}
         <div class="podium-score">${fmt(p[key])}</div>
       `;
       podiumEl.appendChild(row);
@@ -1226,6 +1223,18 @@
       const colors = getColors(p.role, i + 3);
       const row = document.createElement("div");
       row.className = "rest-row";
+
+      let errBlock = "";
+      if (key === "pick") {
+        const rate = errorRate(p);
+        const cls = rateClass(rate);
+        const rateLabel = rate === null ? "—" : (rate * 100).toFixed(2) + "%";
+        errBlock = `<div class="rest-err">
+          <span class="err-tag ${cls}">${rateLabel}</span>
+          <span class="err-count">錯 ${fmt(p.picked_wrong)}</span>
+        </div>`;
+      }
+
       row.innerHTML = `
         <div class="rest-rank">${i + 4}</div>
         <div class="rest-name">
@@ -1233,41 +1242,10 @@
           <span class="role-name">${p.role}</span>
           <span class="real-name">${p.name || ""}</span>
         </div>
+        ${errBlock}
         <div class="rest-score">${fmt(p[key])}</div>
       `;
       restEl.appendChild(row);
-    });
-  }
-
-  function renderErrorBoard(data) {
-    const list = $("#err-list");
-    list.innerHTML = "";
-
-    // 只顯示有拿貨的，依錯誤率高 → 低排序
-    const candidates = data
-      .filter(p => p.pick > 0)
-      .map(p => ({ ...p, _rate: errorRate(p) }))
-      .sort((a, b) => {
-        if (a._rate === null) return 1;
-        if (b._rate === null) return -1;
-        return b._rate - a._rate;
-      });
-
-    if (candidates.length === 0) {
-      list.innerHTML = `<div class="err-empty">— 今日無拿貨紀錄 —</div>`;
-      return;
-    }
-
-    candidates.forEach(p => {
-      const cls = rateClass(p._rate);
-      const label = p._rate === null ? "—" : (p._rate * 100).toFixed(2) + "%";
-      const item = document.createElement("div");
-      item.className = "err-row";
-      item.innerHTML = `
-        <div class="err-name">${p.role}<span class="err-real">${p.name || ""}</span></div>
-        <span class="err-tag ${cls}">${label}</span>
-      `;
-      list.appendChild(item);
     });
   }
 
@@ -1330,12 +1308,17 @@
   async function init() {
     const buttons = document.querySelectorAll(".switch-btn");
     setIndicator(buttons[0]);
+    // 初始模式 class
+    document.body.classList.add("mode-daily");
+
     buttons.forEach(btn => {
       btn.addEventListener("click", () => {
         buttons.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
         setIndicator(btn);
         currentMode = btn.dataset.mode;
+        document.body.classList.remove("mode-daily", "mode-monthly");
+        document.body.classList.add(`mode-${currentMode}`);
         renderAll(currentMode === "daily" ? DAILY_DATA : MONTHLY_DATA);
       });
     });
