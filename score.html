@@ -539,7 +539,7 @@
     font-size: 30px;
     line-height: 1;
     letter-spacing: 0.02em;
-    color: var(--division-color);
+    color: var(--text);
   }
   .rank-1 .podium-score {
     font-size: 38px;
@@ -1273,7 +1273,6 @@
       row.innerHTML = `
         <div class="medal">${rank}</div>
         <div class="player-block">
-          <div class="avatar" style="background: linear-gradient(135deg, ${colors[0]}, ${colors[1]});">${p.role.charAt(0)}</div>
           <div class="player-text">
             <div class="role">${p.role}</div>
             <div class="real">${p.name || "未指派"}</div>
@@ -1306,7 +1305,6 @@
       row.innerHTML = `
         <div class="rest-rank">${i + 4}</div>
         <div class="rest-name">
-          <div class="mini-avatar" style="background: linear-gradient(135deg, ${colors[0]}, ${colors[1]});">${p.role.charAt(0)}</div>
           <span class="role-name">${p.role}</span>
           <span class="real-name">${p.name || ""}</span>
         </div>
