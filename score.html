@@ -143,8 +143,10 @@
   }
   .ch-pill {
     display: flex;
-    flex-direction: column;
-    padding: 9px 12px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 12px 14px;
     border: 1px solid var(--line);
     border-left: 3px solid var(--ch-color, var(--accent));
     background: linear-gradient(180deg, rgba(19, 27, 48, 0.5), rgba(12, 18, 32, 0.6));
@@ -156,17 +158,17 @@
   .ch-pill .ch-pill-name {
     font-family: "Russo One", "Noto Sans TC", sans-serif;
     color: var(--ch-color, var(--text));
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    margin-bottom: 4px;
+    font-size: 15px;
+    letter-spacing: 0.06em;
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
+    white-space: nowrap;
   }
-  .ch-pill .ch-pill-icon { font-size: 13px; }
+  .ch-pill .ch-pill-icon { font-size: 16px; }
   .ch-pill .ch-pill-num {
     font-family: "Bebas Neue", sans-serif;
-    font-size: 28px;
+    font-size: 30px;
     line-height: 1;
     color: var(--text);
     letter-spacing: 0.04em;
@@ -204,7 +206,7 @@
     border: 1px solid var(--line);
     background: linear-gradient(180deg, rgba(19, 27, 48, 0.7), rgba(12, 18, 32, 0.7));
     border-radius: 5px;
-    padding: 12px 18px;
+    padding: 14px 18px;
     position: relative;
     overflow: hidden;
     transition: transform 0.25s ease;
@@ -221,37 +223,68 @@
   .os-check { --os-color: var(--purple); }
   .os-pack  { --os-color: var(--green); }
 
-  .os-card .os-label {
+  /* 第一張：今日總訂單（保留直式） */
+  .os-total {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .os-total .os-label {
     font-family: "Russo One", "Noto Sans TC", sans-serif;
     color: var(--os-color);
-    font-size: 12px;
+    font-size: 13px;
     letter-spacing: 0.15em;
     margin-bottom: 6px;
   }
-  .os-card .os-num {
+  .os-total .os-num {
     font-family: "Bebas Neue", sans-serif;
-    font-size: 44px;
+    font-size: 50px;
     line-height: 1;
     letter-spacing: 0.02em;
+    color: var(--accent);
+    text-shadow: 0 0 24px rgba(255, 216, 74, 0.3);
+  }
+
+  /* 已拿/檢/包：橫式 (已拿貨 XXX | 剩 XX) */
+  .os-stage {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+  }
+  .os-stage .os-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .os-stage .os-tag {
+    font-family: "Russo One", "Noto Sans TC", sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    color: var(--os-color);
+    white-space: nowrap;
+  }
+  .os-stage .os-val {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 36px;
+    line-height: 1;
     color: var(--text);
+    letter-spacing: 0.02em;
     transition: color 0.3s ease;
   }
-  .os-total .os-num { color: var(--accent); text-shadow: 0 0 24px rgba(255, 216, 74, 0.3); }
-  .os-card .os-foot {
-    margin-top: 6px;
-    font-family: "JetBrains Mono", monospace;
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 0.15em;
+  .os-stage .os-sep {
+    color: var(--dim);
+    font-size: 22px;
+    margin: 0 2px;
   }
-  .os-card .os-foot span {
-    color: var(--orange);
-    font-weight: 700;
-    font-size: 12px;
-  }
-  .os-card.done .os-foot span {
+  .os-stage.done .os-row .os-val {
     color: var(--green);
   }
+  .os-stage .os-row .remain-tag { color: var(--orange); }
+  .os-stage.done .os-row .remain-tag { color: var(--green); }
+  .os-stage .os-row .remain-val { color: var(--orange); font-weight: 700; }
+  .os-stage.done .os-row .remain-val { color: var(--green); }
+
 
   .flash { animation: flash 1.5s ease; }
   @keyframes flash { 0% { color: #fff; text-shadow: 0 0 24px currentColor; } 100% { text-shadow: none; } }
@@ -418,13 +451,21 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 3px;
+    gap: 2px;
   }
   .podium-err .err-count {
-    font-family: "JetBrains Mono", monospace;
-    font-size: 10px;
-    color: var(--muted);
+    font-family: "Russo One", "Noto Sans TC", sans-serif;
+    font-size: 18px;
+    color: var(--accent-2);
     letter-spacing: 0.05em;
+    font-weight: 700;
+  }
+  .podium-err .err-tag {
+    font-size: 11px;
+    padding: 0;
+    background: transparent !important;
+    border: none !important;
+    letter-spacing: 0.03em;
   }
   .podium-row.rank-1 {
     background: linear-gradient(90deg, rgba(255, 216, 74, 0.18), rgba(255, 216, 74, 0.04));
@@ -475,11 +516,12 @@
     text-overflow: ellipsis;
   }
   .player-text .real {
-    font-family: "JetBrains Mono", monospace;
-    font-size: 10px;
-    color: var(--muted);
-    margin-top: 3px;
-    letter-spacing: 0.1em;
+    font-family: "Noto Sans TC", sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    margin-top: 4px;
+    letter-spacing: 0.05em;
+    opacity: 0.85;
   }
 
   .podium-score {
@@ -519,13 +561,21 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 2px;
+    gap: 1px;
   }
   .rest-err .err-count {
-    font-family: "JetBrains Mono", monospace;
-    font-size: 9px;
-    color: var(--muted);
+    font-family: "Russo One", "Noto Sans TC", sans-serif;
+    font-size: 15px;
+    color: var(--accent-2);
     letter-spacing: 0.05em;
+    font-weight: 700;
+  }
+  .rest-err .err-tag {
+    font-size: 10px;
+    padding: 0;
+    background: transparent !important;
+    border: none !important;
+    letter-spacing: 0.03em;
   }
   .rest-rank {
     font-family: "Bebas Neue", sans-serif;
@@ -710,7 +760,7 @@
     .medal { width: 30px; height: 30px; font-size: 14px; }
     .avatar { width: 28px; height: 28px; font-size: 12px; }
     .player-text .role { font-size: 13px; }
-    .player-text .real { font-size: 9px; }
+    .player-text .real { font-size: 12px; }
     .podium-score { font-size: 24px; }
     .rank-1 .podium-score { font-size: 30px; }
     .rest-row { font-size: 14px; padding: 9px 4px; }
@@ -815,22 +865,36 @@
     <div class="os-card os-total">
       <div class="os-label">今日總訂單</div>
       <div class="os-num" id="os-total">0</div>
-      <div class="os-foot">TOTAL ORDERS</div>
     </div>
-    <div class="os-card os-pick">
-      <div class="os-label">已拿貨</div>
-      <div class="os-num" id="os-pick">0</div>
-      <div class="os-foot">剩 <span id="os-pick-remain">0</span> 單</div>
+    <div class="os-card os-stage os-pick">
+      <div class="os-row">
+        <span class="os-tag">已拿貨</span>
+        <span class="os-val" id="os-pick">0</span>
+      </div>
+      <div class="os-row">
+        <span class="os-tag remain-tag">剩</span>
+        <span class="os-val remain-val" id="os-pick-remain" style="font-size: 22px;">0</span>
+      </div>
     </div>
-    <div class="os-card os-check">
-      <div class="os-label">已檢貨</div>
-      <div class="os-num" id="os-check">0</div>
-      <div class="os-foot">剩 <span id="os-check-remain">0</span> 單</div>
+    <div class="os-card os-stage os-check">
+      <div class="os-row">
+        <span class="os-tag">已檢貨</span>
+        <span class="os-val" id="os-check">0</span>
+      </div>
+      <div class="os-row">
+        <span class="os-tag remain-tag">剩</span>
+        <span class="os-val remain-val" id="os-check-remain" style="font-size: 22px;">0</span>
+      </div>
     </div>
-    <div class="os-card os-pack">
-      <div class="os-label">已包貨</div>
-      <div class="os-num" id="os-pack">0</div>
-      <div class="os-foot">剩 <span id="os-pack-remain">0</span> 單</div>
+    <div class="os-card os-stage os-pack">
+      <div class="os-row">
+        <span class="os-tag">已包貨</span>
+        <span class="os-val" id="os-pack">0</span>
+      </div>
+      <div class="os-row">
+        <span class="os-tag remain-tag">剩</span>
+        <span class="os-val remain-val" id="os-pack-remain" style="font-size: 22px;">0</span>
+      </div>
     </div>
   </div>
 
@@ -886,7 +950,7 @@
   const DETAIL_TOTALS_RANGE = "B27:M30";
   const CHANNEL_NAMES = ["蝦皮", "四大", "新竹", "黑貓", "官網四大", "嘉里大榮", "補寄"];
   const CHANNEL_ICONS = ["🛒", "📦", "🚚", "🐈", "🏪", "📮", "🔄"];
-  const CHANNEL_COLORS = ["#ff5e3a", "#ffd84a", "#3dffa6", "#1a1a1a", "#7da3ff", "#b66dff", "#ff8a3d"];
+  const CHANNEL_COLORS = ["#ff5e3a", "#ffd84a", "#3dffa6", "#e8e3d8", "#7da3ff", "#b66dff", "#ff8a3d"];
 
   const COLOR_MAP = {
     "白星":["#ff9ec5","#ffd1e3"],"火拳艾斯":["#ff5b2e","#ffaa70"],"傑克":["#5a3826","#a07050"],
@@ -1195,10 +1259,10 @@
       if (key === "pick") {
         const rate = errorRate(p);
         const cls = rateClass(rate);
-        const rateLabel = rate === null ? "—" : (rate * 100).toFixed(2) + "%";
+        const rateLabel = rate === null ? "—" : "(" + (rate * 100).toFixed(2) + "%)";
         errBlock = `<div class="podium-err">
-          <span class="err-tag ${cls}">${rateLabel}</span>
           <span class="err-count">錯 ${fmt(p.picked_wrong)}</span>
+          <span class="err-tag ${cls}">${rateLabel}</span>
         </div>`;
       }
 
@@ -1228,10 +1292,10 @@
       if (key === "pick") {
         const rate = errorRate(p);
         const cls = rateClass(rate);
-        const rateLabel = rate === null ? "—" : (rate * 100).toFixed(2) + "%";
+        const rateLabel = rate === null ? "—" : "(" + (rate * 100).toFixed(2) + "%)";
         errBlock = `<div class="rest-err">
-          <span class="err-tag ${cls}">${rateLabel}</span>
           <span class="err-count">錯 ${fmt(p.picked_wrong)}</span>
+          <span class="err-tag ${cls}">${rateLabel}</span>
         </div>`;
       }
 
