@@ -245,22 +245,22 @@
     text-shadow: 0 0 24px rgba(255, 216, 74, 0.3);
   }
 
-  /* 已拿/檢/包：橫式 (已拿貨 XXX | 剩 XX) */
+  /* 已拿/檢/包：單行 (已拿貨 1,566 ───────── 剩 75) */
   .os-stage {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 6px;
   }
   .os-stage .os-row {
     display: flex;
     align-items: baseline;
     gap: 8px;
+    width: 100%;
   }
   .os-stage .os-tag {
     font-family: "Russo One", "Noto Sans TC", sans-serif;
     font-size: 14px;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.08em;
     color: var(--os-color);
     white-space: nowrap;
   }
@@ -272,18 +272,28 @@
     letter-spacing: 0.02em;
     transition: color 0.3s ease;
   }
-  .os-stage .os-sep {
-    color: var(--dim);
-    font-size: 22px;
-    margin: 0 2px;
+  /* 剩餘部分推到最右邊 */
+  .os-stage .remain-tag {
+    margin-left: auto;
+    color: var(--orange);
+    font-family: "Russo One", "Noto Sans TC", sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.08em;
   }
-  .os-stage.done .os-row .os-val {
+  .os-stage .remain-val {
+    color: var(--orange);
+    font-family: "Bebas Neue", sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 1;
+  }
+  .os-stage.done .os-val {
     color: var(--green);
   }
-  .os-stage .os-row .remain-tag { color: var(--orange); }
-  .os-stage.done .os-row .remain-tag { color: var(--green); }
-  .os-stage .os-row .remain-val { color: var(--orange); font-weight: 700; }
-  .os-stage.done .os-row .remain-val { color: var(--green); }
+  .os-stage.done .remain-tag,
+  .os-stage.done .remain-val {
+    color: var(--green);
+  }
 
 
   .flash { animation: flash 1.5s ease; }
@@ -870,30 +880,24 @@
       <div class="os-row">
         <span class="os-tag">已拿貨</span>
         <span class="os-val" id="os-pick">0</span>
-      </div>
-      <div class="os-row">
-        <span class="os-tag remain-tag">剩</span>
-        <span class="os-val remain-val" id="os-pick-remain" style="font-size: 22px;">0</span>
+        <span class="remain-tag">剩</span>
+        <span class="remain-val" id="os-pick-remain">0</span>
       </div>
     </div>
     <div class="os-card os-stage os-check">
       <div class="os-row">
         <span class="os-tag">已檢貨</span>
         <span class="os-val" id="os-check">0</span>
-      </div>
-      <div class="os-row">
-        <span class="os-tag remain-tag">剩</span>
-        <span class="os-val remain-val" id="os-check-remain" style="font-size: 22px;">0</span>
+        <span class="remain-tag">剩</span>
+        <span class="remain-val" id="os-check-remain">0</span>
       </div>
     </div>
     <div class="os-card os-stage os-pack">
       <div class="os-row">
         <span class="os-tag">已包貨</span>
         <span class="os-val" id="os-pack">0</span>
-      </div>
-      <div class="os-row">
-        <span class="os-tag remain-tag">剩</span>
-        <span class="os-val remain-val" id="os-pack-remain" style="font-size: 22px;">0</span>
+        <span class="remain-tag">剩</span>
+        <span class="remain-val" id="os-pack-remain">0</span>
       </div>
     </div>
   </div>
